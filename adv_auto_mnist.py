@@ -13,7 +13,7 @@ def get_normalized_vector(v):
 
 
 class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
-    def __init__(self, n_in=784, n_hidden_g=[1000, 1000], n_hidden_d=[500, 500], latent_dim=2,
+    def __init__(self, n_in=784, n_hidden_g=[1000, 1000, 1000], n_hidden_d=[500, 500, 500], latent_dim=2,
                  z_prior='gaussian'):
 
         self.n_in = n_in
