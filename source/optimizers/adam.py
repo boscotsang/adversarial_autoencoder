@@ -28,6 +28,7 @@ class ADAM(Optimizer):
             models_m.append(m)
             models_v.append(v)
         for param, gparam, m, v in zip(self.params, g_model_params, models_m, models_v):
+            print param
             beta_1_t = T.cast(beta_1 * lam ** (t - 1), theano.config.floatX)
             updates[m] = T.cast(beta_1_t * m + (1 - beta_1_t) * gparam,theano.config.floatX)
             updates[v] = T.cast(beta_2 * v + (1 - beta_2) * (gparam * gparam),theano.config.floatX)

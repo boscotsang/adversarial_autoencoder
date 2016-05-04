@@ -13,14 +13,14 @@ def get_normalized_vector(v):
 
 
 class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
-    def __init__(self, n_in=784, n_hidden_g=[1000, 1000, 1000], n_hidden_d=[500, 500, 500], latent_dim=2,
+    def __init__(self, n_in=784, n_hidden_g=[1000, 1000], n_hidden_d=[500, 500], latent_dim=2,
                  z_prior='gaussian'):
 
         self.n_in = n_in
         self.z_prior = z_prior
 
         self.enc = []
-        for i in xrange(len(n_hidden_g)):
+        for i, _ in enumerate(n_hidden_g):
             if 0 == i:
                 self.enc.append(L.Linear((n_in, n_hidden_g[i])))
             elif len(n_hidden_g) - 1 > i:
@@ -29,16 +29,16 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
                 self.enc.append(L.Linear((n_hidden_g[i], latent_dim)))
 
         self.dec = []
-        for i in xrange(len(n_hidden_g)):
+        for i, _ in enumerate(n_hidden_g):
             if 0 == i:
                 self.dec.append(L.Linear((latent_dim, n_hidden_g[-1])))
             elif len(n_hidden_g) - 1 > i:
-                self.dec.append(L.Linear((n_hidden_g[-(i+1)], n_hidden_g[-(i + 2)])))
+                self.dec.append(L.Linear((n_hidden_g[-(i + 1)], n_hidden_g[-(i + 2)])))
             else:
-                self.dec.append(L.Linear((n_hidden_g[-(i+1)], n_in)))
+                self.dec.append(L.Linear((n_hidden_g[-(i + 1)], n_in)))
 
         self.discriminator = []
-        for i, _ in enumerate(n_hidden_g):
+        for i, _ in enumerate(n_hidden_d):
             if 0 == i:
                 self.discriminator.append(L.Linear((latent_dim, n_hidden_d[i])))
             elif len(n_hidden_d) - 1 > i:
@@ -60,14 +60,14 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
         h = input
         for e in self.enc:
             h = e(h)
-            h = L.relu(h)
+            h = L.sigmoid(h)
         return h
 
     def decode(self, input, train=True):
         h = input
         for d in self.dec:
             h = d(h)
-            h = L.relu(h)
+            h = L.sigmoid(h)
         return h
 
     def D(self, input, train=True):
