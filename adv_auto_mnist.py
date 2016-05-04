@@ -45,7 +45,7 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
         # self.dec_l2 = L.Linear((1000, 1000))
         # self.dec_l3 = L.Linear((1000, n_in))
 
-        self.Dis = []
+        self.dis = []
         for i, _ in enumerate(n_hidden_g):
             if 0 == i:
                 self.dis.append(L.Linear((latent_dim, n_hidden_d[i])))
