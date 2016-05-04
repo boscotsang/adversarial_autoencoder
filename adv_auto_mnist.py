@@ -45,14 +45,14 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
         # self.dec_l2 = L.Linear((1000, 1000))
         # self.dec_l3 = L.Linear((1000, n_in))
 
-        self.D = []
+        self.Dis = []
         for i, _ in enumerate(n_hidden_g):
             if 0 == i:
-                self.dec.append(L.Linear((latent_dim, n_hidden_d[i])))
+                self.dis.append(L.Linear((latent_dim, n_hidden_d[i])))
             elif len(n_hidden_d) - 1 > i:
-                self.dec.append(L.Linear((n_hidden_d[i], n_hidden_d[i + 1])))
+                self.dis.append(L.Linear((n_hidden_d[i], n_hidden_d[i + 1])))
             else:
-                self.dec.append(L.Linear((n_hidden_d[i], 1)))
+                self.dis.append(L.Linear((n_hidden_d[i], 1)))
 
         self.model_params = []
         for i in xrange(len(self.enc)):
@@ -80,7 +80,7 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
 
     def D(self, input, train=True):
         h = input
-        for d in self.dec:
+        for d in self.dis:
             h = d(h)
             h = L.sigmoid(h)
         return h
