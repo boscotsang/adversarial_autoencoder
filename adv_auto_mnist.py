@@ -28,31 +28,23 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
             else:
                 self.enc.append(L.Linear((n_hidden_g[i], latent_dim)))
 
-        # self.enc_l1 = L.Linear((n_in, 1000))
-        # self.enc_l2 = L.Linear((1000, 1000))
-        # self.enc_l3 = L.Linear((1000, latent_dim))
-
         self.dec = []
         for i in xrange(len(n_hidden_g)):
             if 0 == i:
-                self.dec.append(L.Linear((n_in, n_hidden_g[i])))
+                self.dec.append(L.Linear((latent_dim, n_hidden_g[-1])))
             elif len(n_hidden_g) - 1 > i:
-                self.dec.append(L.Linear((n_hidden_g[i], n_hidden_g[i + 1])))
+                self.dec.append(L.Linear((n_hidden_g[-(i+1)], n_hidden_g[-(i + 2)])))
             else:
-                self.dec.append(L.Linear((n_hidden_g[i], latent_dim)))
+                self.dec.append(L.Linear((n_hidden_g[-(i+1)], n_in)))
 
-        # self.dec_l1 = L.Linear((latent_dim, 1000))
-        # self.dec_l2 = L.Linear((1000, 1000))
-        # self.dec_l3 = L.Linear((1000, n_in))
-
-        self.dis = []
+        self.discriminator = []
         for i, _ in enumerate(n_hidden_g):
             if 0 == i:
-                self.dis.append(L.Linear((latent_dim, n_hidden_d[i])))
+                self.discriminator.append(L.Linear((latent_dim, n_hidden_d[i])))
             elif len(n_hidden_d) - 1 > i:
-                self.dis.append(L.Linear((n_hidden_d[i], n_hidden_d[i + 1])))
+                self.discriminator.append(L.Linear((n_hidden_d[i], n_hidden_d[i + 1])))
             else:
-                self.dis.append(L.Linear((n_hidden_d[i], 1)))
+                self.discriminator.append(L.Linear((n_hidden_d[i], 1)))
 
         self.model_params = []
         for i in xrange(len(self.enc)):
@@ -60,8 +52,8 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
         for i in xrange(len(self.dec)):
             self.model_params += self.dec[i].params
         self.D_params = []
-        for i in xrange(len(self.D)):
-            self.model_params += self.D[i].params
+        for i in xrange(len(self.discriminator)):
+            self.model_params += self.discriminator[i].params
         self.rng = RandomStreams(seed=numpy.random.randint(1234))
 
     def encode(self, input, train=True):
@@ -80,7 +72,7 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
 
     def D(self, input, train=True):
         h = input
-        for d in self.dis:
+        for d in self.discriminator:
             h = d(h)
             h = L.sigmoid(h)
         return h
