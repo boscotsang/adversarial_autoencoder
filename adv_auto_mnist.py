@@ -3,6 +3,7 @@ import source.layers as L
 from theano.tensor.shared_randomstreams import RandomStreams
 import numpy, theano
 import theano.tensor as T
+import operator
 
 
 def get_normalized_vector(v):
@@ -53,9 +54,14 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
             else:
                 self.dec.append(L.Linear((n_hidden_d[i], 1)))
 
-        self.model_params = self.enc_l1.params + self.enc_l2.params + self.enc_l3.params \
-                            + self.dec_l1.params + self.dec_l2.params + self.dec_l3.params
-        self.D_params = self.D_l1.params + self.D_l2.params + self.D_l3.params
+        self.model_params = []
+        for i in xrange(len(self.enc)):
+            self.model_params += self.enc[i].params
+        for i in xrange(len(self.dec)):
+            self.model_params += self.dec[i].params
+        self.D_params = []
+        for i in xrange(len(self.D)):
+            self.model_params += self.D[i].params
         self.rng = RandomStreams(seed=numpy.random.randint(1234))
 
     def encode(self, input, train=True):
