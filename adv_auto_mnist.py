@@ -60,14 +60,14 @@ class AdversarialAutoencoderMNIST(AdversarialAutoencoder):
         h = input
         for e in self.enc:
             h = e(h)
-            h = L.sigmoid(h)
+            h = L.relu(h)
         return h
 
     def decode(self, input, train=True):
         h = input
         for d in self.dec:
             h = d(h)
-            h = L.sigmoid(h)
+            h = L.relu(h)
         return h
 
     def D(self, input, train=True):
